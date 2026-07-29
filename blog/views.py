@@ -1,5 +1,5 @@
 from django.db.models import F
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -67,7 +67,13 @@ class BlogUpdateView(UpdateView):
         "preview",
         "is_published",
     )
-    success_url = "/blogs/{id}/"
+
+    def get_success_url(self):
+        """Возвращает адрес отредактированной статьи."""
+        return reverse(
+            "blog:blog_detail",
+            kwargs={"pk": self.object.pk},
+        )
 
 
 class BlogDeleteView(DeleteView):
