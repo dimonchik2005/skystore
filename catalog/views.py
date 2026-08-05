@@ -1,15 +1,21 @@
 from django.contrib import messages
 from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, DetailView, ListView
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView,
+)
 
 from catalog.forms import ProductForm
 from catalog.models import Product
 
 
 class ProductListView(ListView):
-    """Отображает каталог товаров."""
+    """Отображает список продуктов."""
 
     model = Product
     template_name = "catalog/home.html"
@@ -21,7 +27,7 @@ class ProductListView(ListView):
 
 
 class ProductDetailView(DetailView):
-    """Отображает подробную информацию о товаре."""
+    """Отображает один продукт."""
 
     model = Product
     template_name = "catalog/product_detail.html"
@@ -29,7 +35,7 @@ class ProductDetailView(DetailView):
 
 
 class ProductCreateView(CreateView):
-    """Создаёт новый товар."""
+    """Создаёт новый продукт."""
 
     model = Product
     form_class = ProductForm
@@ -40,7 +46,7 @@ class ProductCreateView(CreateView):
 
         messages.success(
             self.request,
-            "Товар успешно добавлен.",
+            "Продукт успешно создан.",
         )
 
         return response
@@ -50,6 +56,46 @@ class ProductCreateView(CreateView):
             "product_detail",
             kwargs={"pk": self.object.pk},
         )
+
+
+class ProductUpdateView(UpdateView):
+    """Редактирует существующий продукт."""
+
+    model = Product
+    form_class = ProductForm
+    template_name = "catalog/product_form.html"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        messages.success(
+            self.request,
+            "Продукт успешно обновлён.",
+        )
+
+        return response
+
+    def get_success_url(self):
+        return reverse(
+            "product_detail",
+            kwargs={"pk": self.object.pk},
+        )
+
+
+class ProductDeleteView(DeleteView):
+    """Удаляет продукт."""
+
+    model = Product
+    template_name = "catalog/product_confirm_delete.html"
+    success_url = reverse_lazy("home")
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Продукт успешно удалён.",
+        )
+
+        return super().form_valid(form)
 
 
 class ContactsView(View):

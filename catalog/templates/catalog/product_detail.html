@@ -1,82 +1,96 @@
 {% extends "catalog/base.html" %}
 
 {% block title %}
-    {{ product.name }} — SkyStore
+{{ product.name }} — SkyStore
 {% endblock %}
 
 {% block content %}
-    <section class="container py-5">
-        <div class="card shadow-sm">
-            <div class="row g-0">
-                <div class="col-lg-6">
-                    {% if product.image %}
-                        <img
-                            src="{{ product.image.url }}"
-                            class="img-fluid rounded-start w-100"
-                            alt="{{ product.name }}"
-                            style="height: 500px; object-fit: cover;"
-                        >
-                    {% else %}
-                        <div
-                            class="bg-secondary-subtle d-flex
+<section class="container py-5">
+    <div class="card shadow-sm">
+        <div class="row g-0">
+            <div class="col-lg-6">
+                {% if product.image %}
+                <img
+                        src="{{ product.image.url }}"
+                        class="img-fluid rounded-start w-100"
+                        alt="{{ product.name }}"
+                        style="height: 500px; object-fit: cover;"
+                >
+                {% else %}
+                <div
+                        class="bg-secondary-subtle d-flex
                                    align-items-center justify-content-center"
-                            style="height: 500px;"
-                        >
+                        style="height: 500px;"
+                >
                             <span class="text-secondary">
                                 Изображение отсутствует
                             </span>
-                        </div>
-                    {% endif %}
                 </div>
+                {% endif %}
+            </div>
 
-                <div class="col-lg-6">
-                    <div class="card-body p-5">
-                        <p class="text-secondary mb-2">
-                            Категория: {{ product.category.name }}
-                        </p>
+            <div class="col-lg-6">
+                <div class="card-body p-5">
+                    <p class="text-secondary mb-2">
+                        Категория: {{ product.category.name }}
+                    </p>
 
-                        <h1 class="card-title">
-                            {{ product.name }}
-                        </h1>
+                    <h1 class="card-title">
+                        {{ product.name }}
+                    </h1>
 
-                        <p class="card-text mt-4">
-                            {{ product.description|default:"Описание отсутствует" }}
-                        </p>
+                    <p class="card-text mt-4">
+                        {{ product.description|default:"Описание отсутствует" }}
+                    </p>
 
-                        <p class="display-6 fw-bold text-primary">
-                            {{ product.price }} ₽
-                        </p>
+                    <p class="display-6 fw-bold text-primary">
+                        {{ product.price }} ₽
+                    </p>
 
-                        <hr>
+                    <hr>
 
-                        <p class="small text-secondary">
-                            Добавлен:
-                            {{ product.created_at|date:"d.m.Y H:i" }}
-                        </p>
+                    <p class="small text-secondary">
+                        Добавлен:
+                        {{ product.created_at|date:"d.m.Y H:i" }}
+                    </p>
 
-                        <p class="small text-secondary">
-                            Изменён:
-                            {{ product.updated_at|date:"d.m.Y H:i" }}
-                        </p>
+                    <p class="small text-secondary">
+                        Изменён:
+                        {{ product.updated_at|date:"d.m.Y H:i" }}
+                    </p>
 
-                        <div class="d-flex gap-2 mt-4">
-                            <a
+                    <div class="d-flex gap-2 mt-4">
+                        <a
                                 href="{% url 'home' %}"
                                 class="btn btn-outline-secondary"
-                            >
-                                Вернуться в каталог
-                            </a>
+                        >
+                            Вернуться в каталог
+                        </a>
 
-                            <button
+                        <a
+                                href="{% url 'product_update' product.pk %}"
+                                class="btn btn-warning"
+                        >
+                            Редактировать
+                        </a>
+
+                        <a
+                                href="{% url 'product_delete' product.pk %}"
+                                class="btn btn-danger"
+                        >
+                            Удалить
+                        </a>
+
+                        <button
                                 type="button"
                                 class="btn btn-primary"
-                            >
-                                Купить
-                            </button>
-                        </div>
+                        >
+                            Купить
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 {% endblock %}
