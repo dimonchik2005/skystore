@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -26,7 +27,7 @@ class ProductListView(ListView):
         return Product.objects.all()
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     """Отображает один продукт."""
 
     model = Product
@@ -34,7 +35,7 @@ class ProductDetailView(DetailView):
     context_object_name = "product"
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     """Создаёт новый продукт."""
 
     model = Product
@@ -58,7 +59,7 @@ class ProductCreateView(CreateView):
         )
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     """Редактирует существующий продукт."""
 
     model = Product
@@ -82,7 +83,7 @@ class ProductUpdateView(UpdateView):
         )
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     """Удаляет продукт."""
 
     model = Product
