@@ -1,8 +1,9 @@
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import (LoginRequiredMixin, PermissionRequiredMixin,
+                                        UserPassesTestMixin)
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -15,16 +16,30 @@ from catalog.forms import ProductForm
 from catalog.models import Product
 
 
-class ProductListView(ListView):
-    """Отображает список продуктов."""
+class ProductUnpublishView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    View,
+):
+    permission_required = (
+        "catalog.can_unpublish_product"
+    )
+    raise_exception = True
 
-    model = Product
-    template_name = "catalog/home.html"
-    context_object_name = "products"
-    paginate_by = 6
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        product.is_published = False
+        product.save(update_fields=["is_published"])
 
-    def get_queryset(self):
-        return Product.objects.all()
+        messages.success(
+            request,
+            "Публикация продукта отменена.",
+        )
+
+        return redirect(
+            "catalog:product_detail",
+            pk=product.pk,
+        )
 
 
 class ProductDetailView(LoginRequiredMixin, DetailView):
@@ -42,61 +57,80 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     form_class = ProductForm
     template_name = "catalog/product_form.html"
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        form.fields.pop("is_published", None)
+
+        return form
+
     def form_valid(self, form):
-        response = super().form_valid(form)
-
-        messages.success(
-            self.request,
-            "Продукт успешно создан.",
-        )
-
-        return response
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse(
-            "product_detail",
+        return reverse_lazy(
+            "catalog:product_detail",
             kwargs={"pk": self.object.pk},
         )
 
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
-    """Редактирует существующий продукт."""
-
+class ProductUpdateView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    UpdateView,
+):
     model = Product
     form_class = ProductForm
     template_name = "catalog/product_form.html"
+    raise_exception = True
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
+    def test_func(self):
+        product = self.get_object()
+        user = self.request.user
 
-        messages.success(
-            self.request,
-            "Продукт успешно обновлён.",
+        return (
+                product.owner_id == user.id
+                or user.has_perm(
+            "catalog.can_unpublish_product"
+        )
         )
 
-        return response
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        if not self.request.user.has_perm(
+                "catalog.can_unpublish_product"
+        ):
+            form.fields.pop("is_published", None)
+
+        return form
 
     def get_success_url(self):
-        return reverse(
-            "product_detail",
+        return reverse_lazy(
+            "catalog:product_detail",
             kwargs={"pk": self.object.pk},
         )
 
 
-class ProductDeleteView(LoginRequiredMixin, DeleteView):
-    """Удаляет продукт."""
-
+class ProductDeleteView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    DeleteView,
+):
     model = Product
     template_name = "catalog/product_confirm_delete.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("catalog:product_list")
+    raise_exception = True
 
-    def form_valid(self, form):
-        messages.success(
-            self.request,
-            "Продукт успешно удалён.",
+    def test_func(self):
+        product = self.get_object()
+        user = self.request.user
+
+        return (
+                product.owner_id == user.id
+                or user.has_perm("catalog.delete_product")
         )
-
-        return super().form_valid(form)
 
 
 class ContactsView(View):
@@ -123,3 +157,12 @@ class ContactsView(View):
         )
 
         return redirect("contacts")
+
+
+class ProductListView(ListView):
+    model = Product
+    template_name = "catalog/home.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        return Product.objects.all()

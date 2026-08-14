@@ -32,6 +32,7 @@ class ProductForm(forms.ModelForm):
             "image",
             "category",
             "price",
+            "is_published"
         )
 
     def __init__(self, *args, **kwargs):
@@ -41,11 +42,11 @@ class ProductForm(forms.ModelForm):
         for field in self.fields.values():
             widget = field.widget
 
-            if isinstance(widget, forms.CheckboxInput):
-                widget.attrs["class"] = "form-check-input"
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs["class"] = "form-check-input"
 
-            elif isinstance(widget, forms.Select):
-                widget.attrs["class"] = "form-select"
+            elif isinstance(field.widget, forms.Select):
+                field.widget.attrs["class"] = "form-select"
 
             else:
                 widget.attrs["class"] = "form-control"

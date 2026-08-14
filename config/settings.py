@@ -140,8 +140,8 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = "users.User"
 
 LOGIN_URL = "users:login"
-LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "catalog:product_list"
+LOGOUT_REDIRECT_URL = "catalog:product_list"
 
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND",

@@ -28,7 +28,6 @@
                 </div>
                 {% endif %}
             </div>
-
             <div class="col-lg-6">
                 <div class="card-body p-5">
                     <p class="text-secondary mb-2">
@@ -58,27 +57,12 @@
                         Изменён:
                         {{ product.updated_at|date:"d.m.Y H:i" }}
                     </p>
-
-                    <div class="d-flex gap-2 mt-4">
+                    <div class="d-flex flex-wrap gap-2 mt-4">
                         <a
-                                href="{% url 'home' %}"
+                                href="{% url 'catalog:product_list' %}"
                                 class="btn btn-outline-secondary"
                         >
                             Вернуться в каталог
-                        </a>
-
-                        <a
-                                href="{% url 'product_update' product.pk %}"
-                                class="btn btn-warning"
-                        >
-                            Редактировать
-                        </a>
-
-                        <a
-                                href="{% url 'product_delete' product.pk %}"
-                                class="btn btn-danger"
-                        >
-                            Удалить
                         </a>
 
                         <button
@@ -87,6 +71,41 @@
                         >
                             Купить
                         </button>
+
+                        {% if user == product.owner or perms.catalog.can_unpublish_product %}
+                        <a
+                                href="{% url 'catalog:product_update' product.pk %}"
+                                class="btn btn-warning"
+                        >
+                            Редактировать
+                        </a>
+                        {% endif %}
+
+                        {% if user == product.owner or perms.catalog.delete_product %}
+                        <a
+                                href="{% url 'catalog:product_delete' product.pk %}"
+                                class="btn btn-danger"
+                        >
+                            Удалить
+                        </a>
+                        {% endif %}
+
+                        {% if product.is_published and perms.catalog.can_unpublish_product %}
+                        <form
+                                method="post"
+                                action="{% url 'catalog:product_unpublish' product.pk %}"
+                                class="d-inline"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                    type="submit"
+                                    class="btn btn-outline-danger"
+                            >
+                                Снять с публикации
+                            </button>
+                        </form>
+                        {% endif %}
                     </div>
                 </div>
             </div>

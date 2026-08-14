@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -23,6 +24,20 @@ class Category(models.Model):
 
 class Product(models.Model):
     """Товар интернет-магазина."""
+
+    is_published = models.BooleanField(
+        default=False,
+        verbose_name="Опубликован",
+    )
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="products",
+        verbose_name="Владелец",
+    )
 
     name = models.CharField(
         max_length=100,
@@ -61,6 +76,12 @@ class Product(models.Model):
     class Meta:
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
+        permissions = [
+            (
+                "can_unpublish_product",
+                "Может отменять публикацию продукта",
+            ),
+        ]
 
     def __str__(self) -> str:
         return self.name

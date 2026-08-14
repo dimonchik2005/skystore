@@ -72,7 +72,7 @@ class UserLoginView(LoginView):
 class UserLogoutView(LogoutView):
     """Завершает сеанс пользователя."""
 
-    next_page = reverse_lazy("home")
+    next_page = reverse_lazy("catalog:product_list")
 
 
 class UserProfileUpdateView(

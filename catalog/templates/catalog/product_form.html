@@ -91,14 +91,14 @@
 
                             {% if object %}
                             <a
-                                    href="{% url 'product_detail' object.pk %}"
+                                    href="{% url 'catalog:product_detail' product.pk %}"
                                     class="btn btn-outline-secondary"
                             >
                                 Отмена
                             </a>
                             {% else %}
                             <a
-                                    href="{% url 'home' %}"
+                                    href="{% url 'catalog:product_list' %}"
                                     class="btn btn-outline-secondary"
                             >
                                 Отмена

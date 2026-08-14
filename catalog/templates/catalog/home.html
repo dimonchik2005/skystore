@@ -14,7 +14,7 @@
             </p>
 
             <a
-                href="{% url 'product_create' %}"
+                href="{% url 'catalog:product_create' %}"
                 class="btn btn-primary btn-lg"
             >
                 Добавить товар
@@ -65,7 +65,7 @@
                                 </p>
 
                                 <a
-                                    href="{% url 'product_detail' product.pk %}"
+                                    href="{% url 'catalog:product_detail' product.pk %}"
                                     class="btn btn-outline-primary w-100"
                                 >
                                     Подробнее
@@ -79,7 +79,7 @@
                     <div class="alert alert-info text-center">
                         Товаров пока нет.
 
-                        <a href="{% url 'product_create' %}">
+                        <a href="{% url 'catalog:product_create' %}">
                             Добавить первый товар
                         </a>
                     </div>
