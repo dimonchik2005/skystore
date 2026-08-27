@@ -1,4 +1,8 @@
 from django.contrib import messages
+from django.conf import settings
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -13,7 +17,8 @@ from django.views.generic import (
 )
 
 from catalog.forms import ProductForm
-from catalog.models import Product
+from catalog.models import Category, Product
+from catalog.services import get_products_by_category
 
 
 class ProductUnpublishView(
@@ -42,8 +47,16 @@ class ProductUnpublishView(
         )
 
 
+@method_decorator(
+    cache_page(settings.CACHE_TTL),
+    name="dispatch",
+)
+@method_decorator(
+    vary_on_cookie,
+    name="dispatch",
+)
 class ProductDetailView(LoginRequiredMixin, DetailView):
-    """Отображает один продукт."""
+    """Отображает один продукт с кешированием."""
 
     model = Product
     template_name = "catalog/product_detail.html"
@@ -166,3 +179,25 @@ class ProductListView(ListView):
 
     def get_queryset(self):
         return Product.objects.all()
+
+class ProductsByCategoryView(ListView):
+    """Отображает продукты выбранной категории."""
+
+    template_name = "catalog/products_by_category.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        self.category = get_object_or_404(
+            Category,
+            pk=self.kwargs["category_id"],
+        )
+
+        return get_products_by_category(
+            self.category.pk,
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["category"] = self.category
+
+        return context
