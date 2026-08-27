@@ -1,0 +1,132 @@
+{% extends "catalog/base.html" %}
+
+{% block title %}
+    Контакты — SkyStore
+{% endblock %}
+
+{% block content %}
+    <section class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold">
+                Контакты
+            </h1>
+
+            <p class="lead text-secondary">
+                Свяжитесь с нами удобным способом.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h2 class="h4 mb-0">
+                            Контактная информация
+                        </h2>
+                    </div>
+
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Страна</th>
+                                    <td>USA</td>
+                                </tr>
+
+                                <tr>
+                                    <th scope="row">ИНН</th>
+                                    <td>91-1144442</td>
+                                </tr>
+
+                                <tr>
+                                    <th scope="row">Адрес</th>
+                                    <td>Redmond, WA, 98052-6399</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h2 class="h4 mb-0">
+                            Свяжитесь с нами
+                        </h2>
+                    </div>
+
+                    <div class="card-body">
+                        <form
+                            method="post"
+                            action="{% url 'catalog:contacts' %}"
+                        >
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label
+                                    for="name"
+                                    class="form-label"
+                                >
+                                    Имя
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="name"
+                                    class="form-control"
+                                    id="name"
+                                    placeholder="Ваше имя"
+                                    required
+                                >
+                            </div>
+
+                            <div class="mb-3">
+                                <label
+                                    for="phone"
+                                    class="form-label"
+                                >
+                                    Телефон
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    class="form-control"
+                                    id="phone"
+                                    placeholder="Контактный телефон"
+                                    required
+                                >
+                            </div>
+
+                            <div class="mb-3">
+                                <label
+                                    for="message"
+                                    class="form-label"
+                                >
+                                    Сообщение
+                                </label>
+
+                                <textarea
+                                    name="message"
+                                    class="form-control"
+                                    id="message"
+                                    placeholder="Введите сообщение"
+                                    rows="5"
+                                    required
+                                ></textarea>
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary w-100"
+                            >
+                                Отправить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
