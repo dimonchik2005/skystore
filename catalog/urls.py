@@ -7,7 +7,8 @@ from catalog.views import (
     ProductDetailView,
     ProductListView,
     ProductUpdateView,
-    ProductUnpublishView
+    ProductUnpublishView,
+    ProductsByCategoryView
 )
 
 app_name = "catalog"
@@ -47,5 +48,10 @@ urlpatterns = [
         "products/<int:pk>/unpublish/",
         ProductUnpublishView.as_view(),
         name="product_unpublish",
+    ),
+    path(
+        "categories/<int:category_id>/",
+        ProductsByCategoryView.as_view(),
+        name="products_by_category",
     ),
 ]
